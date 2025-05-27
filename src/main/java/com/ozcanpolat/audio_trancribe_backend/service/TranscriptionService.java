@@ -3,6 +3,9 @@ package com.ozcanpolat.audio_trancribe_backend.service;
 import com.ozcanpolat.audio_trancribe_backend.exception.TranscriptionException;
 import com.ozcanpolat.audio_trancribe_backend.exception.UnsupportedAudioFormatException;
 import com.ozcanpolat.audio_trancribe_backend.util.AudioFormatUtil;
+import com.ozcanpolat.audio_trancribe_backend.util.GoogleCredentialProvider;
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +36,11 @@ public class TranscriptionService {
 
             RecognitionAudio audio = RecognitionAudio.newBuilder().setContent(audioBytes).build();
 
-            try (SpeechClient speechClient = SpeechClient.create()) {
+            SpeechSettings speechSettings = SpeechSettings.newBuilder()
+                    .setCredentialsProvider(FixedCredentialsProvider.create(GoogleCredentialProvider.getCredentialsFromEnv()))
+                    .build();
+
+            try (SpeechClient speechClient = SpeechClient.create(speechSettings)) {
                 RecognizeResponse response = speechClient.recognize(configBuilder.build(), audio);
                 return response.getResultsList().stream()
                         .map(result -> result.getAlternativesList().get(0).getTranscript())
@@ -51,4 +58,3 @@ public class TranscriptionService {
         }
     }
 }
-
