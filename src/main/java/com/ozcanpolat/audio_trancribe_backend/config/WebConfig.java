@@ -9,11 +9,13 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173", "https://localhost:5173")
-                .allowedOrigins("https://audio-transcribe-frontend-rho.vercel.app")
+                .allowedOrigins(
+                        "http://localhost:5173",
+                        "https://localhost:5173",
+                        "https://audio-transcribe-frontend-rho.vercel.app"
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
 }
-
